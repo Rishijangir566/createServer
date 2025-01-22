@@ -1,0 +1,55 @@
+import http from "http";
+
+let cars = [
+  { id: 1, model: "porsche", make: 2000 },
+  { id: 2, model: "lamborghini", make: 2023 },
+  { id: 3, model: "mercedes", make: 2023 },
+  { id: 4, model: "tesla", make: 2050 },
+  { id: 5, model: "aston martin", make: 2000 },
+];
+
+const server = http.createServer((req, res) => {
+      // get method is use to data bhejna or get krna 
+  if (request.method === "GET") {  
+      res.watchHead(200,{"contentType":"aplication/json"});
+      res.end(JSON.stringify(cars))
+  }
+  // post method is use to add to new 
+   else if (request.method === "POST") {
+      let body =""          // 
+      req.on("data" ,(item)=>{
+        body+=item
+      })
+      req.on("end" ,()=>{
+        cars.push(JSON.parse(body))
+        res.watchHead(201,{"contentType":"aplication/json"});
+      res.end(JSON.stringify(cars))    
+      })
+  } 
+  // delete method is use to delete to array
+  else if (request.method === "DELETE" && request.url.match(/\/\d+/)) {
+    const idDelete = req.url.split("/")[1]
+    const updateData = cars.filter((carsItem)=>carsItem.id!===Number(idDelete))
+     res.watchHead(200,{"contentType":"aplication/json"});
+      res.end(JSON.stringify(updateData))
+  } 
+  // put method is use to edit to array 
+  else if (request.method === "PUT" && request.url.match(/\/\d+/)) {
+    const editId = req.url.split("/")[1]
+    let body=""
+     req.on("data", (item)=>{
+        body+=item
+     })
+     req.on("end",()=>{
+        const updateData = cars.map((caritem)=>{
+            return caritem.id===Number(editId)?JSON.parse(body):caritem
+        })
+        res.watchHead(200,{"contentType":"aplication/json"});
+      res.end(JSON.stringify(updateData))
+     })    
+  }
+});
+
+server.listen(8080, () => {
+  console.log("Server has started on 8080");
+});
